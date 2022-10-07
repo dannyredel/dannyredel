@@ -24,7 +24,8 @@
 ### :hammer_and_wrench: Languages and Tools :
 <div align="center">
   <img src="https://github.com/devicons/devicon/blob/master/icons/rstudio/rstudio-original.svg" title="RStudio" alt="RStudio" width="40" height="40"/>&nbsp;
-  <img src="https://upload.wikimedia.org/wikipedia/commons/7/79/Stata_logo_med_blue.png" title="STATA" alt="STATA" width="80" height="40"/>&nbsp;
+  <img src="https://pkgs.rstudio.com/rmarkdown/reference/figures/logo.png" title="RMarkdown" alt="RMarkdown" width="35" height="40"/>&nbsp;
+  <img src="https://upload.wikimedia.org/wikipedia/commons/7/79/Stata_logo_med_blue.png" title="STATA" alt="STATA" width="85" height="40"/>&nbsp;
   <img src="https://avatars.githubusercontent.com/u/6359919?s=280&v=4" title="LaTeX" alt="LaTeX" width="40" height="40"/>&nbsp;
   <img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original-wordmark.svg" title="Python" alt="Python" width="40" height="40"/>&nbsp;
   <img src="https://github.com/devicons/devicon/blob/master/icons/jupyter/jupyter-original-wordmark.svg" title="Jupyter" alt="Jupyter" width="40" height="40"/>&nbsp;
