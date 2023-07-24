@@ -34,23 +34,6 @@
 
 ---
 
-### :writing_hand: Blog Posts :
-I have written about Antitrust Cases and Competition (in spanish):
-- [Caso Google Android: la mirada del Tribunal General sobre el test del competidor eficiente](https://centrocompetencia.com/caso-google-android-tribunal-general-test-aec/)
-- [Caso Intel: Tribunal General confirma el enfoque basado en efectos para descuentos condicionales](https://centrocompetencia.com/caso-intel-tribunal-general-confirma-enfoque-efectos-para-descuentos/)
-- [Google/Fitbit y un marco para evaluar fusiones basadas en datos](https://centrocompetencia.com/google-fitbit-marco-para-evaluar-fusiones-basadas-en-datos/)
-- [El Caso Correos de España y sus similitudes con la sentencia del TDLC chileno](https://centrocompetencia.com/caso-correos-espana-similitudes-sentencia-tdlc/)
-- [Poder de las playlists en el consumo de sus usuarios: el Caso Spotify](https://centrocompetencia.com/poder-de-las-playlists-en-el-consumo-de-sus-usuarios-el-caso-spotify/)
-- [Calculando las Eficiencias Compensatorias para evaluar el Control de Fusiones Europeo](https://centrocompetencia.com/calculando-las-eficiencias-compensatorias-para-evaluar-el-control-de-fusiones-europeo/)
-- [Cómo impactan las fusiones en estrategias de reposicionamiento: el caso neerlandés](https://centrocompetencia.com/como-impactan-fusiones-en-reposicionamiento-caso-neerlandes/)
-
-Glossary of Competition Policy Concepts (in spanish):
-- [Poder de Mercado](https://centrocompetencia.com/poder-de-mercado/)
-- [Colusión](https://centrocompetencia.com/colusion/)
-- [Estrangulamiento de Márgenes](https://centrocompetencia.com/estrangulamiento-de-margenes/)
-- [Negativa de Venta](https://centrocompetencia.com/negativa-de-venta/)
-- [Venta Atada y Empaquetamiento](https://centrocompetencia.com/venta-atada-y-empaquetamiento/)
-- [Descuentos por Fidelidad](https://centrocompetencia.com/descuentos-por-fidelidad/)
 
 
 
