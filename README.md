@@ -17,7 +17,7 @@
 - 👋 Hi, I’m Daniel! I'm currently studying a MSc in Econometrics & Mathematical Economics at Tilburg University.
 - 🔭 I also hold a Master in Applied Economics from Pontificial Catholic University in Chile (PUC-Chile).
 - 👀 I’m curious about the intersection between Economics, Data Science & Policy Analysis. 
-- 📫 How to reach me: drredel@uc.cl [![Linkedin Badge](https://img.shields.io/badge/-dannyredel-blue?style=flat&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/daniel-redel-14b052b6/)
+- 📫 How to reach me: d.r.redelsaavedra@tilburguniversity.edu [![Linkedin Badge](https://img.shields.io/badge/-dannyredel-blue?style=flat&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/daniel-redel-14b052b6/)
 
 ---
 
