@@ -130,16 +130,29 @@ CausalImpact cited not run; Matched Markets→a from-scratch TBR). DGP matches R
 features: log-normal geo baselines, shared trend, weekly seasonality, **AR(1)** noise.
 Inject 0% (null) or +10% lift; measure FPR / power / coverage over many sims.
 
-**Key findings (textbook scenario):**
-- **DiD** (cluster-robust SE, single treated geo): **FPR ≈ 50%**, coverage ≈ 50% — wildly
-  anti-conservative. A single treated cluster breaks cluster-robust inference.
-- **TBR** (Gaussian PI ignoring autocorrelation): **FPR ≈ 48%** — AR(1) noise inflates
-  false positives.
-- **Synthetic Control** (placebo inference): **FPR ≈ 5%, coverage ≈ 95%** — well-calibrated,
-  but **underpowered** (≈ 18% power at +10% with a modest donor pool).
-- **Takeaway**: it's the **inference method**, not the point estimate, that decides
-  trust. Analytic-SE tools cry wolf; design-based / Bayesian inference is honest but you
-  must **design for power** (enough control geos, long pre-period, sufficient spend).
+**Key findings (textbook scenario, our run):** all four roughly recover the +10% point
+estimate, but their *inference* diverges wildly:
+
+| Tool | FPR (want ~5%) | Power | Coverage (want ~95%) |
+|---|---|---|---|
+| DiD (cluster-robust, 1 treated geo) | **55%** | 100% | 44% |
+| TBR (Gaussian PI, ignores AR(1)) | **46%** | 86% | 54% |
+| Synthetic Control (placebo) | **11%** | 26% | 88% |
+| CausalPy (naive credible interval) | **100%** | 100% | 8% |
+
+- **Analytic-SE tools cry wolf.** DiD (a single treated cluster breaks cluster-robust SEs)
+  and TBR (AR(1) noise violates the iid prediction interval) post false-positive rates of
+  ~45–55% — they "find" lift that isn't there.
+- **Design-based inference is honest but underpowered.** SC's placebo inference roughly
+  holds its level (FPR ~5–11%, coverage ~90%) but has low power (~26%) with a modest donor
+  pool — it misses real lifts.
+- **Bayesian ≠ automatically calibrated.** Read naively (95% credible interval on the
+  *latent* cumulative impact, few iterations), CausalPy was badly **over-confident**
+  (~100% FPR, ~8% coverage). Judge significance against the **posterior-predictive**
+  counterfactual (including observation noise) and set sensible priors.
+- **Takeaway**: it's the **inference method**, not the point estimate, that decides trust.
+  Validate calibration for *your* setup, and **design for power** (enough control geos,
+  long pre-period, sufficient spend) before running a geo test.
 
 **Inference matters more than the estimator.** Few-treated-cluster corrections
 (Conley–Taber, wild-cluster bootstrap), placebo/permutation, and conformal inference exist
