@@ -1,0 +1,657 @@
+{
+  "N50_rho0.3_k0.8_g0.5_geo": {
+    "scenario": {
+      "N": 50,
+      "rho": 0.3,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": true,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.8125,
+        "median_abs_rel_bias": 0.23646478591205322,
+        "coverage": 0.8125,
+        "mean_width": 4.250434465413251,
+        "rmse": 2.011385498213165,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6824643611907959,
+        "mean_straddle": 1.75,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.0577117400930582,
+            "mean_width": 2.110766850567982,
+            "straddle_frac": 0.25
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.02111507067035183,
+            "mean_width": 3.2035014115730482,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 0.585394745283832,
+            "mean_width": 6.316305204213043,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.28686572493970997,
+            "mean_width": 5.371164395298932,
+            "straddle_frac": 0.75
+          }
+        }
+      },
+      "pooled_geo": {
+        "n_sims": 4,
+        "class_accuracy": 0.8125,
+        "median_abs_rel_bias": 0.2586363683337776,
+        "coverage": 0.8125,
+        "mean_width": 4.9786325968707,
+        "rmse": 2.038210141187287,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6158967018127441,
+        "mean_straddle": 1.5,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.02201924200331931,
+            "mean_width": 1.8823075940583018,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.006050900319812841,
+            "mean_width": 4.792012078182969,
+            "straddle_frac": 0.25
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 0.438097654075754,
+            "mean_width": 7.030858309197884,
+            "straddle_frac": 0.5
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.6854745378823222,
+            "mean_width": 6.209352406043646,
+            "straddle_frac": 0.75
+          }
+        }
+      },
+      "_geo": {
+        "n": 4,
+        "mean_experiments": 20.5
+      }
+    }
+  },
+  "N50_rho0.6_k0.8_g0.5_geo": {
+    "scenario": {
+      "N": 50,
+      "rho": 0.6,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": true,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "nopool": {
+        "n_sims": 4,
+        "class_accuracy": 0.5,
+        "median_abs_rel_bias": 1.3934734509982287,
+        "coverage": 0.125,
+        "mean_width": 5.227713022999938,
+        "rmse": 12.347592120120375,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.259910985827446,
+        "mean_straddle": 0.0,
+        "channels": {
+          "meta": {
+            "coverage": 0.5,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.12646117156122827,
+            "mean_width": 2.3776543859735826,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.3631088546607013,
+            "mean_width": 2.7562371746267775,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.0,
+            "class_accuracy": 0.0,
+            "median_rel_bias": 2.387526765199091,
+            "mean_width": 4.99972809571246,
+            "straddle_frac": 0.0
+          },
+          "plugger": {
+            "coverage": 0.0,
+            "class_accuracy": 0.0,
+            "median_rel_bias": 9.451727317536982,
+            "mean_width": 10.77723243568693,
+            "straddle_frac": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.875,
+        "median_abs_rel_bias": 0.1749580781222642,
+        "coverage": 0.8125,
+        "mean_width": 3.979976822881755,
+        "rmse": 1.8504604739704522,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6481717228889465,
+        "mean_straddle": 1.25,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.05473457671747119,
+            "mean_width": 1.9732359038701632,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.0579288275435259,
+            "mean_width": 3.172129324724955,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.2870700077922689,
+            "mean_width": 5.4688243704970105,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.5431996630336283,
+            "mean_width": 5.305717692434893,
+            "straddle_frac": 0.5
+          }
+        }
+      },
+      "pooled_geo": {
+        "n_sims": 4,
+        "class_accuracy": 0.875,
+        "median_abs_rel_bias": 0.1285406148477472,
+        "coverage": 0.875,
+        "mean_width": 3.7772791341883947,
+        "rmse": 1.7564527338465548,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6193978786468506,
+        "mean_straddle": 1.25,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.03694774981879636,
+            "mean_width": 1.8249553886199665,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.043052487474988646,
+            "mean_width": 2.9567605242210537,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.26603341329758134,
+            "mean_width": 4.983585799077912,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 1.0,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.44245711894676276,
+            "mean_width": 5.343814824834648,
+            "straddle_frac": 0.5
+          }
+        }
+      },
+      "_geo": {
+        "n": 4,
+        "mean_experiments": 20.25
+      }
+    }
+  },
+  "N50_rho0.9_k0.8_g0.5_geo": {
+    "scenario": {
+      "N": 50,
+      "rho": 0.9,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": true,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.875,
+        "median_abs_rel_bias": 0.15789218128660348,
+        "coverage": 0.8125,
+        "mean_width": 4.014038397166392,
+        "rmse": 1.7329541768684376,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6445266902446747,
+        "mean_straddle": 1.25,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.05552864776800295,
+            "mean_width": 2.0238567837915022,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.057762085403337375,
+            "mean_width": 3.518937056346427,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.3036761646494254,
+            "mean_width": 5.510539100175208,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.5346741728446857,
+            "mean_width": 5.002820648352433,
+            "straddle_frac": 0.5
+          }
+        }
+      },
+      "pooled_geo": {
+        "n_sims": 4,
+        "class_accuracy": 0.875,
+        "median_abs_rel_bias": 0.13688704171357519,
+        "coverage": 0.75,
+        "mean_width": 3.7151923860794374,
+        "rmse": 1.844422825829629,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6279742419719696,
+        "mean_straddle": 1.0,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.046395649369607675,
+            "mean_width": 1.851623367812395,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.5,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.04476095182244718,
+            "mean_width": 3.015993066001426,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.2845105020176796,
+            "mean_width": 4.631486472325191,
+            "straddle_frac": 0.5
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.4454408270203665,
+            "mean_width": 5.361666638178736,
+            "straddle_frac": 0.5
+          }
+        }
+      },
+      "_geo": {
+        "n": 4,
+        "mean_experiments": 20.5
+      }
+    }
+  },
+  "N50_rho0.3_k0.8_g0.5_nogeo": {
+    "scenario": {
+      "N": 50,
+      "rho": 0.3,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": false,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.8125,
+        "median_abs_rel_bias": 0.1574094707782056,
+        "coverage": 0.8125,
+        "mean_width": 4.912715269730125,
+        "rmse": 1.8315736440209462,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6133589148521423,
+        "mean_straddle": 1.0,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.08710940935470245,
+            "mean_width": 3.112543171879717,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.058856567612442685,
+            "mean_width": 5.060869218127568,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 0.4874090319767752,
+            "mean_width": 6.899667051312608,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": -0.04383621545982161,
+            "mean_width": 4.577781637600606,
+            "straddle_frac": 0.25
+          }
+        }
+      },
+      "_geo": {
+        "n": 0,
+        "mean_experiments": 0.0
+      }
+    }
+  },
+  "N50_rho0.6_k0.8_g0.5_nogeo": {
+    "scenario": {
+      "N": 50,
+      "rho": 0.6,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": false,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.875,
+        "median_abs_rel_bias": 0.13197013568874785,
+        "coverage": 0.75,
+        "mean_width": 4.701044153138994,
+        "rmse": 1.8560909814646416,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.5958233177661896,
+        "mean_straddle": 1.0,
+        "channels": {
+          "meta": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.09246667321755705,
+            "mean_width": 3.303855232868218,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.1133695578197296,
+            "mean_width": 4.643486150941294,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.5,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 0.7067160290850422,
+            "mean_width": 6.153254901470751,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.15220171741269467,
+            "mean_width": 4.703580327275713,
+            "straddle_frac": 0.25
+          }
+        }
+      },
+      "_geo": {
+        "n": 0,
+        "mean_experiments": 0.0
+      }
+    }
+  },
+  "N50_rho0.9_k0.8_g0.5_nogeo": {
+    "scenario": {
+      "N": 50,
+      "rho": 0.9,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": false,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.875,
+        "median_abs_rel_bias": 0.19601125679817927,
+        "coverage": 0.6875,
+        "mean_width": 4.608196625925664,
+        "rmse": 1.740326428786067,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.6157251596450806,
+        "mean_straddle": 1.0,
+        "channels": {
+          "meta": {
+            "coverage": 0.75,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.048049697666804336,
+            "mean_width": 3.196700499839097,
+            "straddle_frac": 0.0
+          },
+          "tiktok": {
+            "coverage": 0.5,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.09562190224096864,
+            "mean_width": 4.288261305663164,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.5,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 0.5008966496030745,
+            "mean_width": 6.799599378462439,
+            "straddle_frac": 0.75
+          },
+          "plugger": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.009083488481310067,
+            "mean_width": 4.148225319737954,
+            "straddle_frac": 0.25
+          }
+        }
+      },
+      "_geo": {
+        "n": 0,
+        "mean_experiments": 0.0
+      }
+    }
+  },
+  "N10_rho0.6_k0.8_g0.5_geo": {
+    "scenario": {
+      "N": 10,
+      "rho": 0.6,
+      "kappa": 0.8,
+      "gamma": 0.5,
+      "geo_anchor": true,
+      "geo_frac": 0.4
+    },
+    "cell": {
+      "nopool": {
+        "n_sims": 4,
+        "class_accuracy": 0.4375,
+        "median_abs_rel_bias": 1.4278720556030298,
+        "coverage": 0.3125,
+        "mean_width": 10.053996258167782,
+        "rmse": 11.179363556797712,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.2970839589834213,
+        "mean_straddle": 1.75,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 0.75,
+            "median_rel_bias": -0.14888697310717383,
+            "mean_width": 4.545647925796997,
+            "straddle_frac": 0.75
+          },
+          "tiktok": {
+            "coverage": 0.25,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.3650379521887386,
+            "mean_width": 6.421257817389767,
+            "straddle_frac": 0.75
+          },
+          "spotify": {
+            "coverage": 0.0,
+            "class_accuracy": 0.0,
+            "median_rel_bias": 2.479896070133453,
+            "mean_width": 9.154733045377778,
+            "straddle_frac": 0.25
+          },
+          "plugger": {
+            "coverage": 0.0,
+            "class_accuracy": 0.0,
+            "median_rel_bias": 8.549123890878498,
+            "mean_width": 20.094346244106582,
+            "straddle_frac": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "n_sims": 4,
+        "class_accuracy": 0.75,
+        "median_abs_rel_bias": 0.29504139850982847,
+        "coverage": 0.875,
+        "mean_width": 8.118927686628423,
+        "rmse": 2.909136924409567,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.49346479773521423,
+        "mean_straddle": 2.25,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.02382677250372647,
+            "mean_width": 4.372731294442457,
+            "straddle_frac": 0.25
+          },
+          "tiktok": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.014183071743361347,
+            "mean_width": 7.334020884501782,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.75,
+            "median_rel_bias": 0.5140146573125111,
+            "mean_width": 8.19553786701362,
+            "straddle_frac": 1.0
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 1.290457901869181,
+            "mean_width": 12.573420700555832,
+            "straddle_frac": 1.0
+          }
+        }
+      },
+      "pooled_geo": {
+        "n_sims": 4,
+        "class_accuracy": 0.75,
+        "median_abs_rel_bias": 0.29350903171725296,
+        "coverage": 0.875,
+        "mean_width": 6.944806591348311,
+        "rmse": 1.9599339368949873,
+        "kappa_excludes_zero_frac": 1.0,
+        "kappa_median": 0.4836053401231766,
+        "mean_straddle": 2.25,
+        "channels": {
+          "meta": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": 0.02391155564455242,
+            "mean_width": 3.324683942310097,
+            "straddle_frac": 0.25
+          },
+          "tiktok": {
+            "coverage": 1.0,
+            "class_accuracy": 1.0,
+            "median_rel_bias": -0.021156296760905823,
+            "mean_width": 6.925615146767913,
+            "straddle_frac": 0.0
+          },
+          "spotify": {
+            "coverage": 0.75,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 0.5466397851140625,
+            "mean_width": 8.364185780673237,
+            "straddle_frac": 1.0
+          },
+          "plugger": {
+            "coverage": 0.75,
+            "class_accuracy": 0.5,
+            "median_rel_bias": 1.2552703088556334,
+            "mean_width": 9.164741495641994,
+            "straddle_frac": 1.0
+          }
+        }
+      },
+      "_geo": {
+        "n": 4,
+        "mean_experiments": 4.0
+      }
+    }
+  },
+  "_meta": {
+    "M": 4,
+    "estimators": "per-cell",
+    "warmup": 300,
+    "samples": 250,
+    "chains": 2,
+    "tag": "gating",
+    "n_periods": 12,
+    "elapsed_s": "~14min (crashed on final N25 cell; verdict cells intact)"
+  }
+}

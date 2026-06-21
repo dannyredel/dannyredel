@@ -9,10 +9,12 @@ aggregate -> recovery curves -> GO / RESCOPE / KILL verdict.
 """
 from __future__ import annotations
 
+import gc
 import json
 import time
 from pathlib import Path
 
+import jax
 import numpy as np
 
 from . import config as cfg
@@ -42,9 +44,18 @@ def run_cell(scn: cfg.Scenario, M: int, estimators: list[str],
                 roster, kappa, _ = model.mroas_posterior(mcmc, data)
                 s = metrics.score_fit(roster, kappa, truth, data)
                 scores[est].append(s)
+                del mcmc, roster, kappa
             except Exception as exc:                      # keep the sweep alive
                 if verbose:
                     print(f"      ! {est} sim {m} failed: {exc}")
+            finally:
+                # Each fit builds a fresh NUTS kernel -> a new compiled XLA
+                # executable. Without clearing, these accumulate across the
+                # Monte Carlo until the box thrashes and finally OOMs (and the
+                # per-fit time creeps up). Clearing caps memory at a flat
+                # baseline at the cost of one recompile per fit.
+                jax.clear_caches()
+                gc.collect()
     cell = {est: metrics.aggregate_cell(sc) for est, sc in scores.items()}
     cell["_geo"] = {
         "n": len(geo_info),
@@ -59,7 +70,7 @@ def estimators_for(scn: cfg.Scenario) -> list[str]:
     only required for the H4 pooling contrast: the N-sweep + the GO cell)."""
     if not scn.geo_anchor:
         return ["pooled"]                       # H8 contrast only needs pooled
-    needs_nopool = scn.N in (10, 100) or (scn.N == 50 and scn.rho == 0.6)
+    needs_nopool = scn.N in (10, 25) or (scn.N == 50 and scn.rho == 0.6)
     base = ["pooled", "pooled_geo"]
     return (["nopool"] + base) if needs_nopool else base
 
@@ -67,8 +78,12 @@ def estimators_for(scn: cfg.Scenario) -> list[str]:
 def run_study(grid, M=10, estimators=None, warmup=400, samples=400, chains=4,
               tag="gating") -> dict:
     OUTDIR.mkdir(exist_ok=True)
-    results = {}
     t0 = time.time()
+    # seed _meta up front so every checkpoint carries the run config (a crash
+    # mid-run then still yields a self-describing results file)
+    results = {"_meta": {"M": M, "estimators": estimators or "per-cell",
+                         "warmup": warmup, "samples": samples, "chains": chains,
+                         "tag": tag, "n_periods": cfg.N_PERIODS, "elapsed_s": None}}
     for i, scn in enumerate(grid):
         lbl = scn.label()
         ests = estimators or estimators_for(scn)
@@ -79,10 +94,10 @@ def run_study(grid, M=10, estimators=None, warmup=400, samples=400, chains=4,
         dt = time.time() - tc
         _print_cell(lbl, results[lbl]["cell"])
         print(f"    ({dt:.0f}s)", flush=True)
-    results["_meta"] = {"M": M, "estimators": estimators or "per-cell", "warmup": warmup,
-                        "samples": samples, "chains": chains, "tag": tag,
-                        "n_periods": cfg.N_PERIODS,
-                        "elapsed_s": round(time.time() - t0, 1)}
+        # checkpoint after every cell so a later crash never wipes progress
+        results["_meta"]["elapsed_s"] = round(time.time() - t0, 1)
+        (OUTDIR / f"results_{tag}.json").write_text(
+            json.dumps(results, indent=2, default=str))
     out = OUTDIR / f"results_{tag}.json"
     out.write_text(json.dumps(results, indent=2, default=str))
     print(f"\nSaved -> {out}")
@@ -109,7 +124,7 @@ def conclude(results: dict) -> dict:
     go_nogeo = cell("N50_rho0.6_k0.8_g0.5_nogeo", "pooled")
     kill = cell("N50_rho0.9_k0.8_g0.5_nogeo", "pooled")
     small = cell("N10_rho0.6_k0.8_g0.5_geo", "pooled")
-    big = cell("N100_rho0.6_k0.8_g0.5_geo", "pooled")
+    big = cell("N25_rho0.6_k0.8_g0.5_geo", "pooled")
     nopool_go = cell("N50_rho0.6_k0.8_g0.5_geo", "nopool")
 
     # H4 — pooling RMSE reduction vs no-pool, in the GO cell
@@ -149,8 +164,8 @@ def conclude(results: dict) -> dict:
         "geo_width_reduction": round(width_red, 3),
         "geo_bias_reduction": round(bias_red, 3),
         "go_cell": go, "kill_cell": kill,
-        "n_sweep": {"N10": small.get("rmse"), "N50": pooled_go.get("rmse"),
-                    "N100": big.get("rmse")},
+        "n_sweep": {"N10": small.get("rmse"), "N25": big.get("rmse"),
+                    "N50": pooled_go.get("rmse")},
     }
     (OUTDIR / "verdict.json").write_text(json.dumps(summary, indent=2, default=str))
     return summary

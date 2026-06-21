@@ -62,27 +62,23 @@ def _beta_scale_guess(data):
 
 
 def mmm_model(X, streams, rel_of_unit, terr_of_unit, zfan, editorial,
-              tshare, lam, n_releases, n_terr, beta_center, hier=True, geo_prior=None):
+              tshare, beta0_loc, beta0_scale, lam, n_releases, n_terr, hier=True):
     """Negative-Binomial hierarchical MMM. All arrays are JAX-ready.
 
     `tshare` (territory size shares) is fixed to its data-empirical value — it is
     a well-identified nuisance that otherwise fights the baseline scale and slows
     sampling, so we profile it out rather than sample it.
+
+    `beta0_loc` / `beta0_scale` are (C,) *traced* arrays giving the prior on each
+    channel's roster log-mean. The geo anchor is injected purely by tightening
+    Meta's entries here — passing them as arrays (not Python floats baked into the
+    model) avoids a JAX recompile on every fit.
     """
     T, U, Cn = X.shape
 
     # --- channel effects ----------------------------------------------------
     if hier:
-        if geo_prior is not None:
-            # informative geo prior on Meta's roster log-mean; generic elsewhere
-            means = jnp.array(np.where(np.arange(Cn) == cfg.META,
-                                       geo_prior["mean"], beta_center))
-            sds = jnp.array(np.where(np.arange(Cn) == cfg.META,
-                                     geo_prior["sd"], 2.0))
-            beta0 = numpyro.sample("beta0", dist.Normal(means, sds))
-        else:
-            beta0 = numpyro.sample(
-                "beta0", dist.Normal(beta_center * jnp.ones(Cn), 2.0))
+        beta0 = numpyro.sample("beta0", dist.Normal(beta0_loc, beta0_scale))
         sigma = numpyro.sample("sigma", dist.HalfNormal(0.7 * jnp.ones(Cn)))
         with numpyro.plate("rel", n_releases, dim=-2):
             with numpyro.plate("chan", Cn, dim=-1):
@@ -92,7 +88,7 @@ def mmm_model(X, streams, rel_of_unit, terr_of_unit, zfan, editorial,
         # no partial pooling: independent diffuse beta per release
         with numpyro.plate("rel", n_releases, dim=-2):
             with numpyro.plate("chan", Cn, dim=-1):
-                logb = numpyro.sample("logb", dist.Normal(beta_center, 2.0))
+                logb = numpyro.sample("logb", dist.Normal(beta0_loc, 2.0))
         beta = numpyro.deterministic("beta", jnp.exp(logb))
 
     # --- baseline (organic) -------------------------------------------------
@@ -138,6 +134,15 @@ def fit(data, estimator, geo_prior=None, num_warmup=400, num_samples=400,
     by_terr = np.array([streams[:, terr == g].sum() for g in range(data["G"])])
     tshare = by_terr / by_terr.sum()
 
+    # per-channel prior on beta0 (log-mean): generic, with the geo anchor
+    # tightening Meta's entry. Passed as arrays so JAX does not recompile per fit.
+    Cn = data["C"]
+    beta0_loc = np.full(Cn, beta_center)
+    beta0_scale = np.full(Cn, 2.0)
+    if gp is not None:
+        beta0_loc[cfg.META] = gp["mean"]
+        beta0_scale[cfg.META] = gp["sd"]
+
     args = dict(
         X=jnp.asarray(data["X"]),
         streams=jnp.asarray(data["streams"]),
@@ -146,11 +151,17 @@ def fit(data, estimator, geo_prior=None, num_warmup=400, num_samples=400,
         zfan=jnp.asarray(zfan),
         editorial=jnp.asarray(data["editorial"]),
         tshare=jnp.asarray(tshare),
-        lam=data["lam"], n_releases=data["N"], n_terr=data["G"],
-        beta_center=beta_center, hier=hier, geo_prior=gp,
+        beta0_loc=jnp.asarray(beta0_loc),
+        beta0_scale=jnp.asarray(beta0_scale),
+        lam=data["lam"], n_releases=data["N"], n_terr=data["G"], hier=hier,
     )
 
-    kernel = NUTS(mmm_model, target_accept_prob=0.85, max_tree_depth=8)
+    # max_tree_depth is capped low to BOUND per-fit wall-time across the Monte
+    # Carlo (a handful of sims otherwise build very deep trajectories). For a
+    # gating study this trades a little tail-exploration for predictable runtime;
+    # lift the cap for a final high-fidelity run.
+    kernel = NUTS(mmm_model, target_accept_prob=0.8, max_tree_depth=5,
+                  dense_mass=False)
     mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples,
                 num_chains=num_chains, chain_method="parallel", progress_bar=False)
     mcmc.run(jax.random.PRNGKey(seed), **args)

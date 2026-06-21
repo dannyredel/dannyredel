@@ -99,9 +99,11 @@ def gating_grid() -> list[Scenario]:
         Scenario(N=50, rho=0.3, kappa=0.8, gamma=0.5, geo_anchor=False),
         Scenario(N=50, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=False),
         Scenario(N=50, rho=0.9, kappa=0.8, gamma=0.5, geo_anchor=False),  # KILL stress
-        # N sweep at the GO setting (H4 — pooling pays)
+        # N sweep at the GO setting (H4 — pooling pays). The top point is N=25
+        # rather than N=100: the verdict does not need N=100 and the larger model
+        # x parallel-chain device partitions exhausts memory in a small container.
         Scenario(N=10, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=True),
-        Scenario(N=100, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=True),
+        Scenario(N=25, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=True),
     ]
     return cells
 

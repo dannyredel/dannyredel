@@ -42,8 +42,10 @@ def render(tag="gating") -> Path:
     L.append(f"- Geo anchor width reduction (H8): **{verdict['geo_width_reduction']}**")
     L.append(f"- Geo anchor bias reduction (H8): **{verdict['geo_bias_reduction']}**")
     ns = verdict.get("n_sweep", {})
-    L.append(f"- RMSE vs roster size (H4): N10={ns.get('N10')}, "
-             f"N50={ns.get('N50')}, N100={ns.get('N100')}\n")
+    def _r(x):
+        return round(x, 2) if isinstance(x, (int, float)) else x
+    L.append(f"- RMSE vs roster size (H4): N10={_r(ns.get('N10'))}, "
+             f"N25={_r(ns.get('N25'))}, N50={_r(ns.get('N50'))}\n")
 
     # --- per-cell recovery table -------------------------------------------
     L.append("### Per-cell recovery\n")

@@ -63,7 +63,7 @@ def plot_all(tag="gating"):
 
     # --- (3) width & RMSE vs N (H4) -----------------------------------------
     ax = axes[1, 0]
-    Ns = [10, 50, 100]
+    Ns = [10, 25, 50]
     widths = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "pooled").get("mean_width", np.nan)
               for n in Ns]
     rmse_pool = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "pooled").get("rmse", np.nan)

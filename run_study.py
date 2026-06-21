@@ -17,7 +17,10 @@ from __future__ import annotations
 import argparse
 
 from vega import config as cfg
-from vega import plots, report, study
+from vega import study
+# NOTE: vega.plots (matplotlib) and vega.report are imported lazily after the
+# MCMC loop — importing matplotlib up front spins up OpenBLAS threads that
+# oversubscribe against JAX's parallel chains and slow every fit several-fold.
 
 
 def main():
@@ -63,6 +66,7 @@ def main():
         print(f"  geo width reduction    : {summary['geo_width_reduction']}")
         print(f"  geo bias reduction     : {summary['geo_bias_reduction']}")
 
+        from vega import plots, report          # lazy: keep BLAS out of the loop
         rep = report.render(tag=tag)
         fig = plots.plot_all(tag=tag)
         print(f"\n  report -> {rep}\n  plots  -> {fig}")
