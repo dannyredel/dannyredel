@@ -38,18 +38,27 @@ def main():
                          "note": "reduced-M in-session run; full M>=100 is offline"}}
 
     plan = [
+        # value-ordered, each its own checkpoint; pooled_geo on GO first so the
+        # core recovery + H8 land early, then the kappa=0 null (top priority).
         ("N50_rho0.6_k0.8_g0.5_geo", S(N=50, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=True),
-         ["nopool", "pooled", "pooled_geo"], M_go),                       # GO (H1-H5,H8)
+         ["pooled", "pooled_geo"], M_go),                                # GO (H1-H3,H5,H8)
         ("N50_rho0.6_k0.0_g0.5_geo", S(N=50, rho=0.6, kappa=0.0, gamma=0.5, geo_anchor=True),
-         ["pooled_geo"], M_k0),                                          # H5 null (FP)
+         ["pooled_geo"], M_k0),                                          # H5 null (FP) -- top priority
         ("N50_rho0.6_k0.3_g0.5_geo", S(N=50, rho=0.6, kappa=0.3, gamma=0.5, geo_anchor=True),
          ["pooled_geo"], M_k3),                                          # H5 power
+        ("N50_rho0.6_k0.8_g0.5_geo__nopool", S(N=50, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=True),
+         ["nopool"], M_k3),                                              # H4 (merged into GO below)
     ]
     for lbl, scn, ests, M in plan:
         print(f"[verdict {lbl}] M={M} {ests}", flush=True)
         tc = time.time()
-        verdict[lbl] = {"scenario": scn.__dict__, "cell": study.run_cell(scn, M, ests, NUTS)}
-        study._print_cell(lbl, verdict[lbl]["cell"])
+        cell = study.run_cell(scn, M, ests, NUTS)
+        base = lbl.split("__")[0]
+        if base in verdict:                       # merge nopool into the GO cell entry
+            verdict[base]["cell"].update(cell)
+        else:
+            verdict[base] = {"scenario": scn.__dict__, "cell": cell}
+        study._print_cell(lbl, cell)
         print(f"   ({time.time()-tc:.0f}s)", flush=True)
         verdict["_meta"]["elapsed_s"] = round(time.time() - t0, 1)
         save("results_verdict.json", verdict)
