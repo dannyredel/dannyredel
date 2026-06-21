@@ -66,14 +66,14 @@ def run_cell(scn, M, estimators, nuts=None, spec=None, prior_center="global",
             except Exception as exc:
                 if verbose:
                     print(f"      ! {est} sim {m} failed: {exc}")
-            gc.collect()
-    # Clear JAX's compiled-executable cache at the CELL boundary, not per fit:
-    # within a cell all sims share identical shapes so the compiled NUTS is
-    # reused (fast); the leak that OOMs the box only accrues across cells with
-    # different shapes/specs, so one clear per cell caps memory without paying a
-    # recompile on every fit.
-    jax.clear_caches()
-    gc.collect()
+            finally:
+                # Clear per fit: each model.fit compiles a fresh NUTS executable
+                # that XLA caches but does NOT reuse across fits, so without this
+                # a many-fit cell accumulates compiled artifacts until the box
+                # OOMs mid-compile. (Clearing only at cell boundaries crashed a
+                # 60-fit cell ~halfway through.)
+                jax.clear_caches()
+                gc.collect()
     cell = {est: metrics.aggregate_cell(scores[est], diags[est]) for est in estimators}
     cell["_geo"] = {"n": len(geo_info),
                     "mean_experiments": float(np.mean([g["n_experiments"] for g in geo_info]))
