@@ -22,6 +22,8 @@ and the matching marginal-ROAS chain-rule constant for whatever spec is asked.
 """
 from __future__ import annotations
 
+import os
+
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -175,7 +177,8 @@ def mmm_model(X, streams, rel_of_unit, terr_of_unit, zfan, editorial,
 
 def fit(data, estimator, geo_prior=None, num_warmup=1000, num_samples=1000,
         num_chains=4, seed=0, target_accept=0.9, max_tree_depth=10,
-        spec=None, prior_center="global", prior_scale=2.0):
+        spec=None, prior_center="global", prior_scale=2.0,
+        chain_method=os.environ.get("VEGA_CHAIN_METHOD", "parallel")):
     """Run NUTS for one estimator/spec on one simulated roster.
 
     Returns (mcmc, design). `design` carries the estimator's X and mROAS
@@ -223,7 +226,7 @@ def fit(data, estimator, geo_prior=None, num_warmup=1000, num_samples=1000,
     kernel = NUTS(mmm_model, target_accept_prob=target_accept,
                   max_tree_depth=max_tree_depth, dense_mass=False)
     mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples,
-                num_chains=num_chains, chain_method="parallel", progress_bar=False)
+                num_chains=num_chains, chain_method=chain_method, progress_bar=False)
     mcmc.run(jax.random.PRNGKey(seed), extra_fields=("diverging",), **args)
     return mcmc, design
 

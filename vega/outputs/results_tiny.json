@@ -1,0 +1,65 @@
+{
+ "GO_pooled_geo": {
+  "pooled_geo": {
+   "n_sims": 2,
+   "class_accuracy": 0.875,
+   "median_abs_rel_bias": 0.13135065986180247,
+   "coverage": 0.75,
+   "mean_width": 3.63797443362605,
+   "rmse": 1.8507058494014812,
+   "kappa_detected_frac": 1.0,
+   "kappa_median": 0.6349376142024994,
+   "mean_straddle": 1.0,
+   "channels": {
+    "meta": {
+     "coverage": 1.0,
+     "class_accuracy": 1.0,
+     "median_rel_bias": -0.027845813123546465,
+     "mean_width": 1.791865400954038,
+     "straddle_frac": 0.0,
+     "exposure": 253094.656310067
+    },
+    "tiktok": {
+     "coverage": 0.5,
+     "class_accuracy": 1.0,
+     "median_rel_bias": 0.07245613218755156,
+     "mean_width": 3.0763110246555856,
+     "straddle_frac": 0.0,
+     "exposure": 194143.28450802874
+    },
+    "spotify": {
+     "coverage": 0.5,
+     "class_accuracy": 0.5,
+     "median_rel_bias": 0.3879737088176395,
+     "mean_width": 4.803889120534884,
+     "straddle_frac": 0.5,
+     "exposure": 144332.46316181216
+    },
+    "plugger": {
+     "coverage": 1.0,
+     "class_accuracy": 1.0,
+     "median_rel_bias": 0.2862175310427122,
+     "mean_width": 4.879832188359693,
+     "straddle_frac": 0.5,
+     "exposure": 71667.87251605825
+    }
+   },
+   "convergence": {
+    "n_attempted": 4,
+    "n_converged": 2,
+    "frac_dropped": 0.5,
+    "max_rhat": 1.0342332863527972,
+    "median_rhat": 1.0121438158982792,
+    "mean_divergent": 9.0,
+    "frac_with_divergences": 1.0,
+    "frac_strict_zero_div": 0.0,
+    "min_ess_bulk": 159.24716993765077,
+    "min_ess_tail": 156.65224676752726
+   }
+  },
+  "_geo": {
+   "n": 4,
+   "mean_experiments": 20.25
+  }
+ }
+}

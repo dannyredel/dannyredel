@@ -82,7 +82,15 @@ target_accept 0.88, max_tree_depth 7):
 
 ### 1.5 Compute characterisation (drives everything below)
 
-- **~40–60 s per converged fit** on 4 CPU cores (1000+1000 × 4 @ 0.9 is slower still).
+- **~40–140 s per converged fit** on this 4-CPU box (depth-7, 600+600 × 4; the spec's
+  1000+1000 @ 0.9 is slower still). Confirmed empirically: a single M=4 `pooled_geo`
+  cell does **not** finish inside a 9-min window, so even smoke-grade cells must run as
+  checkpointed background jobs, and the full M≥100 grid is firmly an offline job.
+- **Two distinct failure modes, both now fixed:** (a) forcing 4 XLA host devices
+  (`xla_force_host_platform_device_count=4`) makes NumPyro pmap across 4 devices = **4×
+  memory → OOM-kill**; dropping the flag (vectorized chains on one device) keeps memory
+  flat (~stable, 15 GB free). (b) `chain_method="parallel"` is now a `VEGA_CHAIN_METHOD`
+  knob — `sequential` trades ~4× wall-time for ~4× lower peak memory on tight boxes.
 - The cost is the **baseline↔paid identification ridge** the study exists to probe: at
   high target_accept NUTS takes long trajectories along the ridge; lowering tree depth to
   5 halves the time but pushes R-hat to 1.25–1.38 (unconverged). Depth 7 is the knee.
