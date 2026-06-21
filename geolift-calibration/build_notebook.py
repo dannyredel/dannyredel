@@ -139,7 +139,7 @@ For each we record reject / cover. (CausalPy is Bayesian and slow, so it's run o
 textbook scenario with fewer iterations — enough to read its calibration.)""")
 code(r"""SCENARIOS={"Textbook":dict(G=12,Tpre=60),"Small donor pool":dict(G=6,Tpre=60),
            "Short pre-period":dict(G=12,Tpre=21)}
-N=120; rows=[]
+N=80; rows=[]
 import sys
 for sc,par in SCENARIOS.items():
     for tau in [0.0,0.10]:
@@ -152,18 +152,25 @@ for sc,par in SCENARIOS.items():
                     rows.append((sc,tau,nm,e,int(lo>0 or hi<0),int(lo<=true<=hi)))
                 except Exception: pass
         print(f"  done {sc} tau={tau:.0%}", flush=True)
-# CausalPy: textbook only, fewer iters
+res_fast=pd.DataFrame(rows,columns=["scenario","tau","tool","est","reject","cover"])
+print("fast-tool sims collected:", len(res_fast))""")
+
+md("""### CausalPy (Bayesian) — textbook scenario only
+
+CausalPy refits a PyMC model per simulation, so it's slow; we run a smaller number of
+iterations on the textbook scenario — enough to read its calibration alongside the others.""")
+code(r"""cp_rows=[]
 for tau in [0.0,0.10]:
-    for s in range(30):
+    for s in range(12):
         rng=np.random.default_rng(hash(("cp",tau,s))%(2**32))
         df,cols,Tpre,true=sim_panel(rng,tau=tau,**SCENARIOS["Textbook"])
         try:
-            e,lo,hi=est_causalpy(df,cols,Tpre)
-            rows.append(("Textbook",tau,"CausalPy",e,int(lo>0 or hi<0),int(lo<=true<=hi)))
+            e,lo,hi=est_causalpy(df,cols,Tpre,draws=200)
+            cp_rows.append(("Textbook",tau,"CausalPy",e,int(lo>0 or hi<0),int(lo<=true<=hi)))
         except Exception: pass
     print(f"  done CausalPy tau={tau:.0%}", flush=True)
-res=pd.DataFrame(rows,columns=["scenario","tau","tool","est","reject","cover"])
-print("sims collected:", len(res))""")
+res=pd.concat([res_fast,pd.DataFrame(cp_rows,columns=res_fast.columns)],ignore_index=True)
+print("total sims collected:", len(res))""")
 
 md("## 5 · Results")
 code(r"""def agg(scn):
