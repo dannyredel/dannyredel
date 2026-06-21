@@ -1,9 +1,10 @@
-"""Headline recovery plots (study §7).
+"""Headline recovery plots (study §7), decision-grade.
 
-  * CI width vs roster size N            -> H4 (does pooling buy tightness?)
-  * bias vs rho, with/without geo anchor -> H6, H8 (collinearity boundary)
-  * coverage vs N                        -> H2 (is the uncertainty honest?)
-  * classification accuracy heatmap      -> H3 (the money plot)
+  * bias vs rho, geo on/off              -> H6, H8 (collinearity boundary)
+  * classification accuracy vs rho        -> H3 (the money plot)
+  * RMSE vs N (pooled vs no-pool)         -> H4 (pooling pays)
+  * kappa recovery vs true kappa + null   -> H5 (incl. the false-positive test)
+  * geo bias-gain under misspecification  -> Task 4 (geo understated?)
 """
 from __future__ import annotations
 
@@ -21,8 +22,9 @@ from . import config as cfg
 OUTDIR = Path(__file__).parent / "outputs"
 
 
-def _load(tag="gating"):
-    return json.loads((OUTDIR / f"results_{tag}.json").read_text())
+def _load(name):
+    p = OUTDIR / name
+    return json.loads(p.read_text()) if p.exists() else {}
 
 
 def _cell(res, label, est):
@@ -30,71 +32,88 @@ def _cell(res, label, est):
     return r["cell"].get(est, {}) if r else {}
 
 
-def plot_all(tag="gating"):
-    res = _load(tag)
+def plot_all(tag="verdict"):
+    res = _load(f"results_{tag}.json")
+    misspec = _load("results_misspec.json")
     rhos = [0.3, 0.6, 0.9]
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 
-    fig, axes = plt.subplots(2, 2, figsize=(13, 10))
-
-    # --- (1) bias vs rho, geo on/off (H6, H8) -------------------------------
+    # (1) bias vs rho, geo on/off
     ax = axes[0, 0]
-    for geo_on, style in [(True, "o-"), (False, "s--")]:
+    for geo_on, st in [(True, "o-"), (False, "s--")]:
         g = "geo" if geo_on else "nogeo"
         est = "pooled_geo" if geo_on else "pooled"
-        ys = [_cell(res, f"N50_rho{r}_k0.8_g0.5_{g}", est).get("median_abs_rel_bias", np.nan)
-              for r in rhos]
-        ax.plot(rhos, ys, style, label=f"{'geo anchor' if geo_on else 'no geo'}")
-    ax.axhline(cfg.REL_BIAS_GO, color="red", ls=":", label="H1 threshold (0.25)")
-    ax.set_xlabel("inter-channel correlation rho"); ax.set_ylabel("median |relative bias|")
-    ax.set_title("H6/H8 — bias vs collinearity"); ax.legend(); ax.grid(alpha=0.3)
+        ys = [_cell(res, f"N50_rho{r}_k0.8_g0.5_{g}", est).get("median_abs_rel_bias", np.nan) for r in rhos]
+        ax.plot(rhos, ys, st, label="geo anchor" if geo_on else "no geo")
+    ax.axhline(cfg.REL_BIAS_GO, color="red", ls=":", label="H1 (0.25)")
+    ax.set_xlabel("ρ"); ax.set_ylabel("median |rel bias|"); ax.set_title("H6/H8 — bias vs collinearity")
+    ax.legend(); ax.grid(alpha=0.3)
 
-    # --- (2) classification accuracy vs rho (H3) ----------------------------
+    # (2) classification accuracy vs rho
     ax = axes[0, 1]
-    for geo_on, style in [(True, "o-"), (False, "s--")]:
+    for geo_on, st in [(True, "o-"), (False, "s--")]:
         g = "geo" if geo_on else "nogeo"
         est = "pooled_geo" if geo_on else "pooled"
-        ys = [_cell(res, f"N50_rho{r}_k0.8_g0.5_{g}", est).get("class_accuracy", np.nan)
-              for r in rhos]
-        ax.plot(rhos, ys, style, label=f"{'geo anchor' if geo_on else 'no geo'}")
-    ax.axhline(cfg.CLASS_ACCURACY_GO, color="red", ls=":", label="H3 threshold (0.80)")
-    ax.set_xlabel("inter-channel correlation rho"); ax.set_ylabel("classification accuracy")
-    ax.set_title("H3 — the money plot: keep/cut accuracy"); ax.legend(); ax.grid(alpha=0.3)
-    ax.set_ylim(0, 1.02)
+        ys = [_cell(res, f"N50_rho{r}_k0.8_g0.5_{g}", est).get("class_accuracy", np.nan) for r in rhos]
+        ax.plot(rhos, ys, st, label="geo anchor" if geo_on else "no geo")
+    ax.axhline(cfg.CLASS_ACCURACY_GO, color="red", ls=":", label="H3 (0.80)")
+    ax.set_xlabel("ρ"); ax.set_ylabel("classification accuracy"); ax.set_ylim(0, 1.02)
+    ax.set_title("H3 — keep/cut accuracy"); ax.legend(); ax.grid(alpha=0.3)
 
-    # --- (3) width & RMSE vs N (H4) -----------------------------------------
+    # (3) RMSE vs N
+    ax = axes[0, 2]
+    Ns = [10, 25, 50, 100]
+    rp = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "pooled").get("rmse", np.nan) for n in Ns]
+    rn = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "nopool").get("rmse", np.nan) for n in Ns]
+    ax.plot(Ns, rp, "o-", label="pooled"); ax.plot(Ns, rn, "s--", label="no-pool")
+    ax.set_xlabel("roster size N"); ax.set_ylabel("RMSE (streams/€)")
+    ax.set_title("H4 — pooling pays"); ax.legend(); ax.grid(alpha=0.3)
+
+    # (4) kappa recovery + null
     ax = axes[1, 0]
-    Ns = [10, 25, 50]
-    widths = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "pooled").get("mean_width", np.nan)
-              for n in Ns]
-    rmse_pool = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "pooled").get("rmse", np.nan)
-                 for n in Ns]
-    rmse_nopool = [_cell(res, f"N{n}_rho0.6_k0.8_g0.5_geo", "nopool").get("rmse", np.nan)
-                   for n in Ns]
-    ax.plot(Ns, rmse_pool, "o-", label="pooled RMSE")
-    ax.plot(Ns, rmse_nopool, "s--", label="no-pool RMSE")
-    ax.plot(Ns, widths, "^:", color="gray", label="pooled 80% CI width")
-    ax.set_xlabel("roster size N"); ax.set_ylabel("streams/EUR")
-    ax.set_title("H4 — pooling pays (RMSE & width vs N)"); ax.legend(); ax.grid(alpha=0.3)
+    ks = [0.0, 0.3, 0.8]
+    med = [_cell(res, f"N50_rho0.6_k{k}_g0.5_geo", "pooled_geo").get("kappa_median", np.nan) for k in ks]
+    det = [_cell(res, f"N50_rho0.6_k{k}_g0.5_geo", "pooled_geo").get("kappa_detected_frac", np.nan) for k in ks]
+    ax.plot(ks, ks, "k:", label="truth")
+    ax.plot(ks, med, "o-", label="posterior median κ")
+    ax2 = ax.twinx(); ax2.plot(ks, det, "^--", color="purple", label="detection frac")
+    ax2.axhline(cfg.KAPPA_FALSE_POSITIVE_MAX, color="red", ls=":")
+    ax.set_xlabel("true κ"); ax.set_ylabel("estimated κ"); ax2.set_ylabel("frac CI clears ROPE")
+    ax.set_title("H5 — κ recovery + κ=0 null"); ax.legend(loc="upper left"); ax.grid(alpha=0.3)
 
-    # --- (4) per-channel coverage (H2) in the GO cell -----------------------
+    # (5) per-channel coverage/acc, GO cell
     ax = axes[1, 1]
-    go = _cell(res, "N50_rho0.6_k0.8_g0.5_geo", "pooled_geo")
+    go = _cell(res, cfg.GO_LABEL, "pooled_geo")
     if go and "channels" in go:
         names = cfg.CHANNELS
         covs = [go["channels"][c]["coverage"] for c in names]
         accs = [go["channels"][c]["class_accuracy"] for c in names]
         x = np.arange(len(names))
-        ax.bar(x - 0.2, covs, 0.4, label="80% CI coverage")
-        ax.bar(x + 0.2, accs, 0.4, label="classification accuracy")
-        ax.axhspan(cfg.COVERAGE_LO, cfg.COVERAGE_HI, color="green", alpha=0.1,
-                   label="H2 coverage band")
-        ax.set_xticks(x); ax.set_xticklabels(names)
-        ax.set_title("H2/H3 — per-channel (GO cell)"); ax.legend(); ax.set_ylim(0, 1.02)
-        ax.grid(alpha=0.3, axis="y")
+        ax.bar(x - 0.2, covs, 0.4, label="coverage"); ax.bar(x + 0.2, accs, 0.4, label="class acc")
+        ax.axhspan(cfg.COVERAGE_LO, cfg.COVERAGE_HI, color="green", alpha=0.1)
+        ax.set_xticks(x); ax.set_xticklabels(names); ax.set_ylim(0, 1.02)
+        ax.set_title("H2/H3 — per-channel (GO)"); ax.legend()
+    ax.grid(alpha=0.3, axis="y")
 
-    fig.suptitle(f"Vega identification study — recovery curves ({tag})", fontsize=14)
+    # (6) geo bias-gain under misspecification
+    ax = axes[1, 2]
+    if misspec:
+        specs = ["correct", "wrong_adstock", "wrong_saturation", "omit_editorial", "poisson"]
+        gains = []
+        for sp in specs:
+            e = misspec.get(f"{cfg.GO_LABEL}__{sp}", {}).get("cell", {})
+            p, g = e.get("pooled", {}), e.get("pooled_geo", {})
+            gains.append((p.get("median_abs_rel_bias", np.nan) - g.get("median_abs_rel_bias", np.nan))
+                         if p and g else np.nan)
+        x = np.arange(len(specs))
+        ax.bar(x, gains, color=["gray"] + ["steelblue"] * (len(specs) - 1))
+        ax.set_xticks(x); ax.set_xticklabels(specs, rotation=30, ha="right")
+        ax.set_ylabel("geo bias gain (pooled − +geo)")
+        ax.set_title("Task 4 — geo value under misspec")
+    ax.grid(alpha=0.3, axis="y")
+
+    fig.suptitle(f"Vega decision-grade — recovery curves ({tag})", fontsize=15)
     fig.tight_layout()
     path = OUTDIR / f"recovery_{tag}.png"
-    fig.savefig(path, dpi=120)
-    plt.close(fig)
+    fig.savefig(path, dpi=110); plt.close(fig)
     return path

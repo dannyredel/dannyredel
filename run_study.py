@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Run the Counterpoint identification study (Vega).
+"""Run the Counterpoint identification study (Vega) — decision-grade.
 
-Examples
---------
-  python run_study.py --smoke                 # 1-2 cells, M=2, ~minutes (sanity)
-  python run_study.py --mode gating --M 12    # the decision-relevant grid
-  python run_study.py --mode full  --M 200    # the spec's ~144-cell grid (offline)
+Modes
+-----
+  verdict   : the rho/kappa/N/gamma verdict grid (H1-H8 + the kappa=0 null).
+  misspec   : the misspecification battery (correct vs wrong specs) x (pooled vs
+              pooled+geo) on the GO cell + 2 neighbours.
+  lowspend  : the low-spend prior-mitigation comparison (global vs per-channel).
+  all       : verdict, then misspec, then lowspend, then conclude + report.
 
-The full grid is ~144 cells x M sims x 3 estimators of NUTS — that is an offline
-job. `--mode gating` runs only the cells that drive the GO / RESCOPE / KILL
-verdict (the rho-sweep with/without the geo anchor, the KILL stress cell, and an
-N-sweep for the pooling claim).
+Everything is configurable:
+  python run_study.py --mode verdict  --M 100
+  python run_study.py --mode misspec  --M 100 --specs correct,wrong_adstock,poisson
+  python run_study.py --mode all      --M 100 --warmup 1000 --samples 1000 --chains 4
+  python run_study.py --mode verdict  --M 50  --tree-depth 8   # faster, exploratory
+
+The default NUTS is the decision-grade 1000+1000 x 4 chains @ target_accept 0.9.
 """
 from __future__ import annotations
 
@@ -18,58 +23,62 @@ import argparse
 
 from vega import config as cfg
 from vega import study
-# NOTE: vega.plots (matplotlib) and vega.report are imported lazily after the
-# MCMC loop — importing matplotlib up front spins up OpenBLAS threads that
-# oversubscribe against JAX's parallel chains and slow every fit several-fold.
+
+
+def nuts_from_args(a):
+    return dict(warmup=a.warmup, samples=a.samples, chains=a.chains,
+               target_accept=a.target_accept, max_tree_depth=a.tree_depth)
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--mode", choices=["gating", "full"], default="gating")
-    ap.add_argument("--smoke", action="store_true", help="tiny run to check plumbing")
-    ap.add_argument("--M", type=int, default=12, help="Monte-Carlo replicates per cell")
-    ap.add_argument("--warmup", type=int, default=300)
-    ap.add_argument("--samples", type=int, default=300)
-    ap.add_argument("--chains", type=int, default=4)
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--mode", choices=["verdict", "misspec", "lowspend", "all"],
+                    default="verdict")
+    ap.add_argument("--M", type=int, default=100)
+    ap.add_argument("--warmup", type=int, default=cfg.NUTS_WARMUP)
+    ap.add_argument("--samples", type=int, default=cfg.NUTS_SAMPLES)
+    ap.add_argument("--chains", type=int, default=cfg.NUTS_CHAINS)
+    ap.add_argument("--target-accept", type=float, default=cfg.NUTS_TARGET_ACCEPT)
+    ap.add_argument("--tree-depth", type=int, default=cfg.NUTS_MAX_TREE_DEPTH)
+    ap.add_argument("--specs", default="correct,wrong_adstock,wrong_saturation,omit_editorial,poisson")
+    ap.add_argument("--cells", default=None, help="optional: subset of verdict cells by label")
     ap.add_argument("--tag", default=None)
     args = ap.parse_args()
+    nuts = nuts_from_args(args)
 
-    if args.smoke:
-        grid = [
-            cfg.Scenario(N=20, rho=0.6, kappa=0.8, gamma=0.5, geo_anchor=True),
-            cfg.Scenario(N=20, rho=0.9, kappa=0.8, gamma=0.5, geo_anchor=False),
-        ]
-        M = args.M if args.M != 12 else 2
-        tag = args.tag or "smoke"
-    elif args.mode == "full":
-        grid = cfg.full_grid()
-        M, tag = args.M, args.tag or "full"
-    else:
-        grid = cfg.gating_grid()
-        M, tag = args.M, args.tag or "gating"
+    print(f"=== Vega decision-grade | mode={args.mode} M={args.M} "
+          f"NUTS={nuts} ROPE={cfg.KAPPA_ROPE} gate(rhat<={cfg.RHAT_MAX},div<={cfg.MAX_DIVERGENCES}) ===\n")
 
-    print(f"=== Vega identification study | mode={args.mode} smoke={args.smoke} "
-          f"| cells={len(grid)} M={M} | weekly T={cfg.N_PERIODS} ===\n")
+    if args.mode in ("verdict", "all"):
+        grid = cfg.verdict_grid()
+        if args.cells:
+            keep = set(args.cells.split(","))
+            grid = [s for s in grid if s.label() in keep]
+        study.run_study(grid, M=args.M, nuts=nuts, tag=args.tag or "verdict")
 
-    results = study.run_study(grid, M=M, warmup=args.warmup, samples=args.samples,
-                              chains=args.chains, tag=tag)
+    if args.mode in ("misspec", "all"):
+        specs = args.specs.split(",")
+        study.run_misspec(cfg.misspec_cells(), specs, M=args.M, nuts=nuts,
+                          tag="misspec")
 
-    if not args.smoke:
-        summary = study.conclude(results)
-        print("\n" + "=" * 64)
-        print(f"VERDICT: {summary['verdict']}")
-        print("=" * 64)
-        for h, res in summary["ledger"].items():
-            mark = "PASS" if res["pass"] else "FAIL"
-            print(f"  [{mark}] {h:14s} {res['detail']}")
-        print(f"\n  pooling RMSE reduction : {summary['pooling_rmse_reduction']}")
-        print(f"  geo width reduction    : {summary['geo_width_reduction']}")
-        print(f"  geo bias reduction     : {summary['geo_bias_reduction']}")
+    if args.mode in ("lowspend", "all"):
+        from vega import config as c
+        go = next(s for s in cfg.verdict_grid() if s.label() == c.GO_LABEL)
+        study.run_lowspend(go, M=args.M, nuts=nuts, tag="lowspend")
 
-        from vega import plots, report          # lazy: keep BLAS out of the loop
-        rep = report.render(tag=tag)
-        fig = plots.plot_all(tag=tag)
-        print(f"\n  report -> {rep}\n  plots  -> {fig}")
+    if args.mode == "all":
+        import json
+        from pathlib import Path
+        out = Path("vega/outputs")
+        verdict = json.loads((out / "results_verdict.json").read_text())
+        misspec = json.loads((out / "results_misspec.json").read_text())
+        summary = study.conclude(verdict, misspec=misspec)
+        from vega import report, plots
+        report.render()
+        plots.plot_all()
+        print(f"\nVERDICT (correct-spec): {summary['verdict_correct_spec']}")
+        print(f"VERDICT (misspec-robust): {summary['verdict_misspec_robust']}")
 
 
 if __name__ == "__main__":

@@ -215,12 +215,18 @@ def simulate_roster(scn: cfg.Scenario, seed: int):
                   kappa=scn.kappa, lam=cfg.SPILLOVER_LAMBDA, fanbase=fanbase,
                   priority=priority, abar=abar, mroas=mroas, roster_mroas=roster_mroas)
 
+    # per-(release, channel) total adstocked spend -- the exposure measure the
+    # minimum-spend floor (Task 5) is built on; roster total per channel too.
+    rel_chan_adstock = adstock_u.reshape(T, N, Gn, Cn).sum(axis=(0, 2))   # (N, C)
+    chan_adstock_total = rel_chan_adstock.sum(axis=0)                     # (C,)
+
     data = dict(
         streams=streams, X=X, spend_u=spend_u, editorial=editorial,
         rel_of_unit=rel_of_unit, terr_of_unit=terr_of_unit,
         fanbase=fanbase, N=N, T=T, G=Gn, C=Cn, U=U,
         k=k, s=s, theta=theta, lam=cfg.SPILLOVER_LAMBDA, abar=abar,
         Cmat=Cmat, held=held, geo_anchor=scn.geo_anchor,
+        rel_chan_adstock=rel_chan_adstock, chan_adstock_total=chan_adstock_total,
     )
     return data, truth
 
